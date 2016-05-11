@@ -124,11 +124,9 @@ Vagrant.configure(2) do |config|
     echo "PATH="\\$PATH:/opt/maven/bin"" | sudo tee -a /home/vagrant/.profile
 
 
-    echo ""
     echo "*******"
     echo " Done!"
     echo "*******"
-    echo ""
  
   SHELL
 end
