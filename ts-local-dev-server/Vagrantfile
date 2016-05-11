@@ -1,0 +1,134 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine.
+  config.vm.network "forwarded_port", guest: 3306,  host: 3306  # MySQL
+  config.vm.network "forwarded_port", guest: 9200,  host: 9200  # Elasticsearch
+  config.vm.network "forwarded_port", guest: 27017, host: 27017 # MongoDB
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Virtual box settings for VM
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "local development server"
+    #vb.gui = true
+    vb.memory = "4096"
+    vb.cpus = 2
+  end
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  config.vm.provision "shell", inline: <<-SHELL
+
+    sudo apt-get update
+
+    #
+    # Java 8
+    #
+    sudo apt-get install -y python-software-properties debconf-utils
+    sudo add-apt-repository -y ppa:webupd8team/java
+    sudo apt-get update
+    echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+    sudo apt-get install -y oracle-java8-installer
+
+    #
+    # Maven
+    #
+    cd /tmp
+    wget http://ftp.nluug.nl/internet/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+    sudo tar -zxf apache-maven-3.3.9-bin.tar.gz -C /opt/
+    rm apache-maven-3.3.9-bin.tar.gz
+    sudo ln -s /opt/apache-maven-3.3.9/ /opt/maven
+
+    #
+    # Git
+    #
+    sudo apt-get install -y git
+
+    #
+    # MySQL
+    #
+    echo "mysql-server mysql-server/root_password password topsecret" | sudo debconf-set-selections
+    echo "mysql-server mysql-server/root_password_again password topsecret" | sudo debconf-set-selections
+    sudo apt-get -y install mysql-server mysql-client
+
+    # Don't listen to only localhost
+    sudo sed -i.original -e "s/^bind-address.*=/#\\0/" /etc/mysql/my.cnf
+
+    # Allow root to connect from anywhere
+    mysql -u root -ptopsecret -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'topsecret';"
+
+    sudo service mysql restart
+
+    #
+    # Elasticsearch (1.7)
+    #
+    cd /tmp
+    wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.5.deb
+    sudo dpkg -i elasticsearch-1.7.5.deb
+    rm elasticsearch-1.7.5.deb
+
+    sudo service elasticsearch start
+
+    #
+    # MongoDB
+    #
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+    echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org
+ 
+    # Create a self signed certificate to be used by MongoDB
+    sudo openssl req -new -newkey rsa:2048 -nodes -x509 -subj "/C=NL/ST=NH/L=Lijnden/O=eCommerce/CN=localhost" -keyout /usr/lib/ssl/certs/mongodb-cert.key -out /usr/lib/ssl/certs/mongodb-cert.crt
+    cat /usr/lib/ssl/certs/mongodb-cert.key /usr/lib/ssl/certs/mongodb-cert.crt | sudo tee /usr/lib/ssl/certs/mongodb.pem
+ 
+    # Don't listen only to localhost and enable SSL
+    sudo sed -i.original -e "s/bindIp: 127\\.0\\.0\\.1/bindIp: 0\\.0\\.0\\.0\\n  ssl:\\n    mode: allowSSL\\n    PEMKeyFile: \\/usr\\/lib\\/ssl\\/certs\\/mongodb.pem\\n    allowInvalidCertificates: true/" /etc/mongod.conf
+
+    sudo service mongod restart
+
+    #
+    # Docker
+    #
+    sudo apt-get install apt-transport-https ca-certificates
+    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get purge lxc-docker
+    sudo apt-cache policy docker-engine
+    sudo apt-get install -y docker-engine
+    sudo service docker start
+
+    # Allow the vagrant user to use docker without sudo-ing
+    sudo groupadd docker
+    sudo usermod -aG docker vagrant
+
+    #
+    # Set environment variables for vagrant user
+    #
+    echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle/" | sudo tee -a /home/vagrant/.profile
+    echo "PATH="\\$PATH:/opt/maven/bin"" | sudo tee -a /home/vagrant/.profile
+
+
+    echo ""
+    echo "*******"
+    echo " Done!"
+    echo "*******"
+    echo ""
+ 
+  SHELL
+end
