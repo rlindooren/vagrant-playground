@@ -76,7 +76,7 @@ scp -P 2222 -i .vagrant/machines/default/virtualbox/private_key vagrant@localhos
 sudo cp $JAVA_HOME/jre/lib/security/cacerts $JAVA_HOME/jre/lib/security/cacerts.original
 
 # Import the certificate (the default password of the keystore is 'changeit')
-sudo keytool -import -alias localhost -keystore $JAVA_HOME/jre/lib/security/cacerts -file /usr/local/etc/openssl/certs/mongodb-cert.crt
+sudo keytool -import -alias localhost -keystore $JAVA_HOME/jre/lib/security/cacerts -file /tmp/mongodb-cert.crt
 ```
 
 Note: when you update your JDK the certificate has to be trusted again (the new JDK comes with a fresh keystore)
