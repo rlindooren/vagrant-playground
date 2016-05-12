@@ -25,6 +25,8 @@ By default the amount of memory that the VM is allowed to use is set to 4GB. Thi
 
 ## Creating and starting a Virtual Machine
 
+- Install [VirtualBox](https://www.virtualbox.org/) (skip this if you already have installed VirtualBox on your machine)
+
 - Install [Vagrant](https://www.vagrantup.com/) (skip this if Vagrant is already installed)
 
 - Create a directory and download the Vagrant file
