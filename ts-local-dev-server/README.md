@@ -77,14 +77,11 @@ Now you can use: `ssh ts-local-dev-server`
 scp -P 2222 -i .vagrant/machines/default/virtualbox/private_key vagrant@localhost:/usr/lib/ssl/certs/mongodb-cert.crt /tmp/
 ```
 
-or
+or (see the SSH instructions above)
 
 ```
-scp -P 2222 ts-local-dev-server:/usr/lib/ssl/certs/mongodb-cert.crt /tmp/
+scp ts-local-dev-server:/usr/lib/ssl/certs/mongodb-cert.crt /tmp/
 ```
-
-If you followed the SSH instructions above
-
 
 - Import the certificate in Java's keystore
 
