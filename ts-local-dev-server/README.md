@@ -23,23 +23,29 @@ curl -O https://raw.githubusercontent.com/rlindooren/vagrant-playground/master/t
 ```
 
 - Start vagrant (execute this command in the directory you just created)
-`vagrant up`
+```
+vagrant up
+```
 
 - Wait a while (don’t be alarmed by the output flying over your screen)
 
 ## Stopping the VM
 
-`vagrant halt`
+```
+vagrant halt
+```
 
 Alternatively you can also remove the VM with `vagrant destroy`
 
 ## Logging in into the VM ##
 
-**Option 1: Using vagrant**
+**Option 1: Letting Vagrant do the connection configuration for you**
 
-`vagrant ssh`
+```
+vagrant ssh
+```
 
-**Option 2: Using the SSH client**
+**Option 2: Using the SSH client yourself**
 
 ```
 ssh -p 2222 -i .vagrant/machines/default/virtualbox/private_key vagrant@localhost
