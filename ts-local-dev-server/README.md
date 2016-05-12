@@ -11,6 +11,18 @@ Using:
 
 Running on: Ubuntu 14.04 64bit
 
+Exposing these ports on the host:
+
+- 3306 for MySQL
+- 9200 for Elasticsearch
+- 9300 for Elasticsearch
+- 27017 for MongoDB
+
+Allowing you to connect to these services via localhost. e.g.: `mysql -h localhost -u root -p`.
+If you already have one of these services running on your machine the port(s) will conflict and you must change them in the Vagrant file.
+
+By default the amount of memory that the VM is allowed to use is set to 4GB. This and other settings can be changed in the Vagrant file.
+
 ## Creating and starting a Virtual Machine
 
 - Install [Vagrant](https://www.vagrantup.com/) (skip this if Vagrant is already installed)
