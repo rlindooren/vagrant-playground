@@ -9,6 +9,8 @@ Using:
 - MongoDB (with SSL support, making use of a self signed certificate)
 - Docker
 
+Running on: Ubuntu 14.04 64bit
+
 ## Creating and starting a Virtual Machine
 
 - Install [Vagrant](https://www.vagrantup.com/) (skip this if Vagrant is already installed)
@@ -69,15 +71,26 @@ Now you can use: `ssh ts-local-dev-server`
 scp -P 2222 -i .vagrant/machines/default/virtualbox/private_key vagrant@localhost:/usr/lib/ssl/certs/mongodb-cert.crt /tmp/
 ```
 
+or
+
+```
+scp -P 2222 ts-local-dev-server:/usr/lib/ssl/certs/mongodb-cert.crt /tmp/
+```
+
+If you followed the SSH instructions above
+
+
 - Import the certificate in Java's keystore
 
 ```
 # Make a backup of the keystore (just in case)
 sudo cp $JAVA_HOME/jre/lib/security/cacerts $JAVA_HOME/jre/lib/security/cacerts.original
-
+ 
 # Import the certificate (the default password of the keystore is 'changeit')
-sudo keytool -import -alias localhost -keystore $JAVA_HOME/jre/lib/security/cacerts -file /tmp/mongodb-cert.crt
+sudo keytool -import -alias localhost -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -file /tmp/mongodb-cert.crt
 ```
+
+The commands above are based on Mac OSX
 
 Note: when you update your JDK the certificate has to be trusted again (the new JDK comes with a fresh keystore)
 
