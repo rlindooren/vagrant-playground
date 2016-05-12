@@ -80,3 +80,18 @@ sudo keytool -import -alias localhost -keystore $JAVA_HOME/jre/lib/security/cace
 ```
 
 Note: when you update your JDK the certificate has to be trusted again (the new JDK comes with a fresh keystore)
+
+## Hints
+
+**Locale on iTerm**
+
+On Mac OSX it's possible that you get a like this after logging in with SSH:
+
+"WARNING! Your environment specifies an invalid locale."
+
+You can prevent this by not letting iTerm set the locale:
+
+![iTerm preferences](iTerm_dont_set_locale.png)
+
+More info about this can be found here: https://blog.hqcodeshop.fi/archives/56-Mac-OS-X-terminal-UTF-8-over-SSH.html
+
