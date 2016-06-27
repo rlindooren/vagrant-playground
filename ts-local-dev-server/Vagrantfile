@@ -94,7 +94,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y mongodb-org
  
     # Create a self signed certificate to be used by MongoDB
-    sudo openssl req -new -newkey rsa:2048 -nodes -x509 -subj "/C=NL/ST=NH/L=Lijnden/O=eCommerce/CN=localhost" -keyout /usr/lib/ssl/certs/mongodb-cert.key -out /usr/lib/ssl/certs/mongodb-cert.crt
+    sudo openssl req -new -newkey rsa:2048 -nodes -days 3650 -x509 -subj "/C=NL/ST=NH/L=Amsterdam/O=SoftwareDev/CN=localhost" -keyout /usr/lib/ssl/certs/mongodb-cert.key -out /usr/lib/ssl/certs/mongodb-cert.crt
     cat /usr/lib/ssl/certs/mongodb-cert.key /usr/lib/ssl/certs/mongodb-cert.crt | sudo tee /usr/lib/ssl/certs/mongodb.pem
  
     # Don't listen only to localhost and enable SSL
